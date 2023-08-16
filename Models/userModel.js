@@ -16,9 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         email:{
             type: DataTypes.STRING,
             unique :  [true, "Email Already Exists"],
-            validate: [validator.isEmail, 'Please Provide An Valid Email!'],
+            isEmail: true,
             allowNull:false ,
-            required:[true,'An Email Is Required'],
+            required: [true,'An Email Is Required'],
         },
         password: {
             type: DataTypes.STRING,
@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
             minlength:8,
             maxlength:16,
             required: [true,"Password is Required"],
+        },
+        passwordConfirm: {
+            type:DataTypes.VIRTUAL,
         },
         status: {
             type:DataTypes.ENUM('active','inactive'),
@@ -37,4 +40,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     },{timestamps: true}, 
     )
+    return User
 }
