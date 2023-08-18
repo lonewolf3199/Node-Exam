@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
-const { sequelize } = require(".");
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
     const User = sequelize.define("user", {
         id: {
             type: DataTypes.INTEGER(10).UNSIGNED,
@@ -9,36 +8,21 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            required: [true, 'A User Must Have A Name!'],
+            type: DataTypes.STRING(),
         },
-        email:{
-            type: DataTypes.STRING,
-            unique :  [true, "Email Already Exists"],
-            isEmail: true,
-            allowNull:false ,
-            required: [true,'An Email Is Required'],
+        email: {
+            type: DataTypes.STRING(),
         },
         password: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            minlength:8,
-            maxlength:16,
-            required: [true,"Password is Required"],
-        },
-        passwordConfirm: {
-            type:DataTypes.VIRTUAL,
+            type: DataTypes.STRING(),
         },
         status: {
-            type:DataTypes.ENUM('active','inactive'),
-            defaultValue:'active',
+            type: DataTypes.ENUM('active', 'inactive'),        
         },
         role: {
-            type: DataTypes.ENUM('admin','client'),
-            defaultValue:"client"
+            type: DataTypes.ENUM('admin', 'client'),
         }
-    },{timestamps: true}, 
-    )
-    return User
-}
+    }, { timestamps: true });
+
+    return User;
+};

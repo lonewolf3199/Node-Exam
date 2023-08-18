@@ -1,18 +1,28 @@
 module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define("product", {
-        id: {
+        Productid: {
             type: DataTypes.INTEGER(10).UNSIGNED,
             primaryKey: true,
             autoIncrement: true
         },
         name: {
-            type: DataTypes.STRING,
-            allowNull: false ,
-            required: [true, 'A Product Must Have A Name']
+            type: DataTypes.STRING(),
+            allowNull: false,
+            validate:{
+                notEmpty: {
+                    message: 'A Product Must Have A Name!'
+                }
+            }
         },
         price:{
             type :DataTypes.DECIMAL(8),
-            defaultValue:'0',
+            allowNull: false,
+            validate:{
+                notEmpty:{
+                    isNumeric:true,
+                    message:'Price Cannot Be Empty'
+                }
+            }
         },
         image: {
             type :DataTypes.TEXT('long'),
@@ -21,7 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         description: {
             type: DataTypes.TEXT(),
             allowNull:false,
-            required:[true,'Product Description is Required'],
+            validate:{
+                notEmpty:{
+                    message:"Description cannot be empty"
+                }
+            }
         },
         status: {
             type: DataTypes.ENUM(['active','inactive']),
@@ -29,4 +43,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {timestamps : true}
     );
+    return Product;
 }
