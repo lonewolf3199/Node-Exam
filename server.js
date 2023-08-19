@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const db = require('./Models')
 const userRoute = require('./Routes/userRoute')
+const productRoute = require('./Routes/productRoute')
 const AppError = require('./Utils/AppError')
 
 dotenv.config({path: './config.env'});
@@ -20,6 +21,7 @@ app.use(cookieParser())
 // })
 
 app.use('/api/users', userRoute)
+app.use('/api/products', productRoute)
 
 app.use((err, req, res, next) => {
     return res.status(err.status || 500).json({

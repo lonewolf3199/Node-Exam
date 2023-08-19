@@ -33,6 +33,7 @@ const restrictTo = (...roles) => {
         if(!roles.includes(req.users.role)){
             return next(new AppError('You Are Not Authorize To Access This Route!',403))
         }
+        next();
     };
 };
 

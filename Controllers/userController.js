@@ -37,7 +37,7 @@ const sendCreateToken = (user,statuscode,res) => {
     });
 };
 
-const validateRegistration = catchasync(async(req, res, next) => {
+const register = catchasync(async(req, res,next) => {
     const registrationSchema = joi.object({
         name: joi.string()
         .min(3)
@@ -62,34 +62,20 @@ const validateRegistration = catchasync(async(req, res, next) => {
 
     });
 
-    const {error} = registrationSchema.validate(req.body)
+    const {error, value} = registrationSchema.validate(req.body)
 
     if (error) {
     return next(new AppError(error.details[0].message, 400))
     }
 
-        const existingUser = await User.findOne({ where: { email: req.body.email } });
-        if (existingUser) {
-            return next(new AppError('Email is already taken', 409));
-        }
-        next(); 
-});
-
-const register = catchasync(async(req, res,next) => {
-    const pswd = req.body.password;
-    const passwordConfirm = req.body.passwordConfirm;
-    const hashPassword = await bcrypt.hash(pswd, 10)
-        const data = {
-            name: req.body.name,
-            email :  req.body.email,
-            password: hashPassword,
-            role: req.body.role,
-            status: req.body.status
-        }
-        if(pswd !== passwordConfirm){
-            return next(new AppError("passwords don't match",401));
-        };
-        const latestUser = await User.create(data);
+    const existingUser = await User.findOne({ where: { email: req.body.email } });
+    if (existingUser) {
+        return next(new AppError('Email is already taken', 409));
+    }
+    
+    const hashPassword = await bcrypt.hash(value.password, 10)
+    value.password = hashPassword
+        const latestUser = await User.create(value);
         sendCreateToken(latestUser, 201, res)
 });
 
@@ -161,6 +147,5 @@ module.exports = {
     register, 
     login,
     logout,
-    changePassword,
-    validateRegistration
+    changePassword
     }

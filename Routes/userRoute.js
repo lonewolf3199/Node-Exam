@@ -1,11 +1,11 @@
 const express = require('express');
-const {register, login, logout, changePassword, validateRegistration} = require('../Controllers/userController');
+const {register, login, logout, changePassword} = require('../Controllers/userController');
 const { isLoggedIn } = require('../Controllers/authController');
 
 const router = express.Router();
 
 router
-.post('/register',validateRegistration, register);
+.post('/register', register);
 
 router
 .post('/login', login);
