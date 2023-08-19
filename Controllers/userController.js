@@ -70,6 +70,9 @@ const register = catchasync(async(req, res,next) => {
 
     const existingUser = await User.findOne({ where: { email: req.body.email } });
     if (existingUser) {
+        if(existingUser.status === 'banned'){
+            return next(new AppError('Your Email Is Banned! Contact Admin!'))
+        }
         return next(new AppError('Email is already taken', 409));
     }
     
@@ -95,6 +98,9 @@ const login = catchasync(async(req, res, next) => {
         };
         if(user.status === 'inactive'){
             return next(new AppError('Your Account Is Not Active! Please Contact Admin To Activate Your Account', 401))
+        };
+        if(user.status === 'banned'){
+            return next(new AppError('Your Account Got Banned! Please Contact Admin', 401))
         };
         if(user){
             const Same = await bcrypt.compare(password, user.password)
@@ -143,9 +149,57 @@ const changePassword = catchasync(async(req, res, next) => {
     });
 });
 
+const getAllUser = catchasync(async(req,res,next) => {
+    const users = await User.findAll()
+    res.status(200).json({
+        status: 'success',
+        data: users
+    })
+});
+
+const deleteUser = catchasync(async(req, res, next) => {
+    const id = req.params.id
+    const user = await User.findOne({
+        where: {id: id}
+    });
+
+    if(!user){
+        return next(new AppError('User Not Found', 404));
+    }
+    
+    const UD = await User.destroy({
+        where: {id: id}
+    });
+    user.status = 'deleted';
+    await user.save();
+    return res.status(200).json({
+        status:'success' ,
+        data : `Deleted ${UD} Users successfully`
+    })
+})
+
+const banUser = catchasync(async (req, res, next) => {
+    const id = req.params.id;
+    const user = await User.findOne({
+        where: {id: id}
+    });
+    if (!user) {
+        return next(new AppError('User not found', 404));
+    }
+    user.status = 'banned';
+    await user.save();
+    res.status(200).json({
+        status: 'success',
+        message: 'User has been banned successfully.',
+    });
+});
+
 module.exports = {
     register, 
     login,
     logout,
+    getAllUser,
+    deleteUser,
+    banUser,
     changePassword
     }
